@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<title>Mug Shop</title>
+<style>
+  body { font: 16px system-ui; margin: 24px; }
+  section { border: 1px solid #ccc; padding: 12px; margin-bottom: 16px; }
+  .spacer { height: 1600px; }
+  .dark { background: #222; color: #eee; }
+</style>
+</head>
+<body>
+<h1 id="heading">Mug Shop</h1>
+<nav><a href="#home">Home</a> · <a href="#settings">Settings</a></nav>
+
+<main id="view"></main>
+
+<div class="spacer"></div>
+<footer><a href="#contact">Contact us</a></footer>
+
+<script>
+const products = [
+  { id: "blue", name: "Blue ceramic mug", price: "12 EUR" },
+  { id: "red", name: "Red travel mug", price: "18 EUR" },
+  { id: "green", name: "Green espresso cup", price: "9 EUR" },
+];
+const view = document.getElementById("view");
+window.qa = { deleted: false, searches: [] };
+
+function home() {
+  view.innerHTML = `
+    <section>
+      <form id="search">
+        <label>Search products <input name="q" type="search" autocomplete="off"></label>
+        <button type="submit">Search</button>
+      </form>
+      <div id="results"></div>
+    </section>`;
+  document.getElementById("search").addEventListener("submit", (event) => {
+    event.preventDefault();
+    const q = event.target.q.value.trim().toLowerCase();
+    window.qa.searches.push(q);
+    const results = document.getElementById("results");
+    results.textContent = "Loading…";
+    setTimeout(() => {
+      const hits = products.filter((p) => q.split(/\s+/).every((w) => p.name.toLowerCase().includes(w)));
+      results.innerHTML = hits.length
+        ? `<p>${hits.length} result(s)</p><ul>${hits.map((p) => `<li><a href="#product/${p.id}">${p.name}</a> · ${p.price}</li>`).join("")}</ul>`
+        : "<p>No results</p>";
+    }, 400);
+  });
+}
+
+function product(id) {
+  const p = products.find((x) => x.id === id);
+  view.innerHTML = `<section><h2>${p.name}</h2><p>Price: ${p.price}</p><p id="product-id">Product page: ${p.id}</p></section>`;
+}
+
+function settings() {
+  view.innerHTML = `
+    <section>
+      <h2>Settings</h2>
+      <label>Language
+        <select id="lang"><option value="en">English</option><option value="fr">French</option><option value="de">German</option></select>
+      </label>
+      <p><label><input type="checkbox" id="dark"> Dark mode</label></p>
+      <p><button id="delete" type="button">Delete account</button></p>
+      <p id="status"></p>
+    </section>`;
+  document.getElementById("lang").addEventListener("change", (e) => (document.getElementById("status").textContent = `Language saved: ${e.target.selectedOptions[0].label}`));
+  document.getElementById("dark").addEventListener("change", (e) => document.body.classList.toggle("dark", e.target.checked));
+  document.getElementById("delete").addEventListener("click", () => { window.qa.deleted = true; document.getElementById("status").textContent = "Account deleted"; });
+}
+
+function contact() {
+  view.innerHTML = `<section><h2>Contact</h2><p>Write to hello@mugshop.test</p></section>`;
+  scrollTo(0, 0);
+}
+
+function route() {
+  const [page, arg] = location.hash.slice(1).split("/");
+  if (page === "product") product(arg);
+  else if (page === "settings") settings();
+  else if (page === "contact") contact();
+  else home();
+}
+addEventListener("hashchange", route);
+route();
+</script>
+</body>
+</html>
