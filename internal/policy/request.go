@@ -156,9 +156,10 @@ func BuildPrompt(o Observation, c Candidates, goal string, history []Action, mod
 	ops.Set(string(Blocked), "No listed operation can move toward the goal.")
 	questions["goal_met"] = Question{
 		Type: "noul",
-		Instructions: goalQuestion{Goal: goal, Question: "Did recent_actions already carry out what the goal asks, and does the current page show the result? " +
-			"A goal to open a page is complete when a link to that page was followed and the page changed to it. " +
-			"Directions such as 'in the footer' say where the link was, not what the page must contain."},
+		Instructions: goalQuestion{Goal: goal, Question: "Is the goal complete now? It is complete when the current page shows what the goal asks for, " +
+			"whether recent_actions got there or the page was already there. " +
+			"For a goal to open a page, it is complete when the current page is that page, or when recent_actions followed the link the goal names and the page changed. " +
+			"Directions such as 'in the footer' say where a link was, not what the page must contain."},
 	}
 	questions["operation"] = choiceQuestion(goalQuestion{Goal: goal, Rules: rules, Question: "What is the next operation?"}, ops)
 
