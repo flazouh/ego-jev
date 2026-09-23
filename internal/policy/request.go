@@ -22,7 +22,7 @@ var targeted = []struct {
 }{
 	{Click, "click_target", true, "Click one listed element: a button, link, tab, menu item, option, checkbox, or a field to focus it."},
 	{Type, "type_target", false, "Type text into one listed editable field. The text comes from the goal."},
-	{Select, "select_target", true, "Pick one option in a listed dropdown."},
+	{Select, "select_target", true, "Choose one value in a listed dropdown. This is the only way to change a dropdown's value."},
 }
 
 // Request is the body of POST /v1/systemone.
@@ -109,7 +109,11 @@ func BuildPrompt(o Observation, c Candidates, goal string, history []Action, mod
 		if pool.Descriptions.Len() == 0 {
 			continue
 		}
-		ops.Set(string(t.Op), t.Label)
+		label := t.Label
+		if t.Op == Click && c.Pools[Select].Descriptions.Len() > 0 {
+			label += " Not for choosing a dropdown value: use SELECT for that."
+		}
+		ops.Set(string(t.Op), label)
 		criteria := &Ordered{}
 		for i, key := range pool.Descriptions.Keys() {
 			if i == maxOptions {
@@ -152,8 +156,9 @@ func BuildPrompt(o Observation, c Candidates, goal string, history []Action, mod
 	ops.Set(string(Blocked), "No listed operation can move toward the goal.")
 	questions["goal_met"] = Question{
 		Type: "noul",
-		Instructions: goalQuestion{Goal: goal, Question: "Does the current page show that every part of the goal is complete? " +
-			"For a goal to open a page, the current page's url, title, or main heading must show that page."},
+		Instructions: goalQuestion{Goal: goal, Question: "Did recent_actions already carry out what the goal asks, and does the current page show the result? " +
+			"A goal to open a page is complete when a link to that page was followed and the page changed to it. " +
+			"Directions such as 'in the footer' say where the link was, not what the page must contain."},
 	}
 	questions["operation"] = choiceQuestion(goalQuestion{Goal: goal, Rules: rules, Question: "What is the next operation?"}, ops)
 

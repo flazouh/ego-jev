@@ -25,10 +25,10 @@ Each step:
    removed before Jev sees the options. They are listed as `held_for_user`, and a separate yes/no question asks whether
    the goal needs one of them. A yes (p ≥ 0.5) stops the run as `review` on its own.
 3. **Ask Jev once.** One request carries the "which operation" question, one "which target" question per operation
-   (speculative fan-out), a yes/no "is the goal met" question, and the held-control question.
+   (speculative fan-out), a yes/no "did the recent actions complete the goal" question, and the held-control question.
 4. **Gate.** The operation vote needs p ≥ 0.5 and a 0.1 lead over the runner-up. A text field needs the same. A click or
-   dropdown target needs p ≥ 0.4, because every remaining target is a safe move. DONE needs p ≥ 0.8 with "goal met" at
-   ≥ 0.5, or "goal met" at ≥ 0.9 on its own. Anything weaker stops the run as `unsure`.
+   dropdown target needs p ≥ 0.4, because every remaining target is a safe move. DONE needs to be the top operation and
+   "goal met" at ≥ 0.6. Anything weaker stops the run as `unsure`.
 5. **Find text to type.** First a `--value` you pass, then a quoted phrase from the goal that Jev picks for the field,
    then an optional small text model through OpenRouter.
 6. **Act.** Clicks, wheel scrolls, and typing go through raw CDP input. When the click point would hit another element,

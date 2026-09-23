@@ -78,7 +78,8 @@ function observeInPage({ maxElements, maxText }) {
     const editable =
       !el.readOnly && (el.isContentEditable || el.tagName === "TEXTAREA" || (el.tagName === "INPUT" && !["checkbox", "radio", "button", "submit", "reset", "image", "range", "color"].includes(el.type)));
     if (editable) record.editable = true;
-    if ("value" in el && el.tagName !== "BUTTON" && el.tagName !== "SELECT") record.value = text(el.value, 120);
+    // A checkbox or radio value attribute (often "on") is not what the user sees; `checked` carries its state.
+    if ("value" in el && !["BUTTON", "SELECT"].includes(el.tagName) && !["checkbox", "radio"].includes(el.type)) record.value = text(el.value, 120);
     else if (el.isContentEditable) record.value = text(el.innerText, 120);
     if (["checkbox", "radio"].includes(el.type)) record.checked = String(el.checked);
     for (const key of ["checked", "selected", "expanded"]) {

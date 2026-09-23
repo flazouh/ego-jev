@@ -187,22 +187,6 @@ func TestNeedsHeldStopsForReviewEvenWhenTheVoteIsSplit(t *testing.T) {
 	}
 }
 
-func TestDoneNeedsAStrongVoteAndGoalMet(t *testing.T) {
-	c := BuildCandidates(shop(), nil)
-	req := BuildPrompt(shop(), c, "Open the new stories page", nil, "m")
-	done := func(p, met float64) Response {
-		return Response{Answers: map[string]Answer{"operation": choice("DONE", map[string]float64{"DONE": p, "CLICK": 1 - p}), "goal_met": yes(met)}}
-	}
-	for _, tc := range []struct {
-		p, met float64
-		sure   bool
-	}{{0.67, 0.85, false}, {0.95, 0.3, false}, {0.95, 0.9, true}} {
-		if d, _ := req.Read(done(tc.p, tc.met), gates); d.Sure != tc.sure {
-			t.Errorf("p=%v met=%v sure=%v, want %v (%s)", tc.p, tc.met, d.Sure, tc.sure, d.Why)
-		}
-	}
-}
-
 func TestAnOptionThatWasNeverOfferedIsRejected(t *testing.T) {
 	c := BuildCandidates(shop(), nil)
 	req := BuildPrompt(shop(), c, "g", nil, "m")

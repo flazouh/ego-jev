@@ -1,6 +1,9 @@
 package policy
 
-import "testing"
+import (
+	"strings"
+	"testing"
+)
 
 func TestDoneGate(t *testing.T) {
 	c := BuildCandidates(shop(), nil)
@@ -14,9 +17,9 @@ func TestDoneGate(t *testing.T) {
 		done bool
 	}{
 		{"weak vote, goal_met very sure", "DONE", 0.49, 0.95, true, true},
-		{"weak vote, goal_met only fairly sure", "DONE", 0.49, 0.85, false, true},
-		{"strong vote, goal_met leaning yes", "DONE", 0.85, 0.55, true, true},
-		{"strong vote, goal_met says no", "DONE", 0.85, 0.4, false, true},
+		{"top vote, goal_met clears the bar", "DONE", 0.7, 0.61, true, true},
+		{"top vote, goal_met below the bar", "DONE", 0.7, 0.55, false, true},
+		{"strong vote, goal_met says no", "DONE", 0.95, 0.3, false, true},
 		{"another operation wins even when goal_met is sure", "WAIT", 0.9, 0.99, true, false},
 	}
 	for _, tc := range cases {
@@ -34,5 +37,17 @@ func TestDoneGate(t *testing.T) {
 				t.Fatalf("op=%s sure=%v why=%q, want done=%v sure=%v", d.Op, d.Sure, d.Why, tc.done, tc.sure)
 			}
 		})
+	}
+}
+
+func TestClickPointsDropdownValuesToSelect(t *testing.T) {
+	withDropdown := BuildPrompt(shop(), BuildCandidates(shop(), nil), "g", nil, "m")
+	if v, _ := withDropdown.Request.Questions["operation"].Choices.Get("CLICK"); !strings.Contains(v, "use SELECT") {
+		t.Fatalf("CLICK = %q", v)
+	}
+	o := Observation{Elements: []Element{{ID: "e1", Role: "button", Label: "Go"}}}
+	without := BuildPrompt(o, BuildCandidates(o, nil), "g", nil, "m")
+	if v, _ := without.Request.Questions["operation"].Choices.Get("CLICK"); strings.Contains(v, "SELECT") {
+		t.Fatalf("CLICK mentions SELECT with no dropdown: %q", v)
 	}
 }
