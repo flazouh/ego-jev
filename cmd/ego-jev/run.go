@@ -37,8 +37,8 @@ func parseRun(args []string, stderr io.Writer) (runFlags, string, error) {
 	f := runFlags{opts: runner.DefaultOptions()}
 	fs := flag.NewFlagSet("run", flag.ContinueOnError)
 	fs.SetOutput(stderr)
-	fs.IntVar(&f.space, "space", 0, "resume this ego task space id (default: create a new space)")
-	fs.StringVar(&f.name, "name", "ego-jev", "name of a new task space")
+	fs.IntVar(&f.space, "space", 0, "resume the ego task space with this id")
+	fs.StringVar(&f.name, "name", "ego-jev", "without --space, resume the task space with this name, or create it")
 	fs.StringVar(&f.page, "page", "p1", "page label inside the task space")
 	fs.StringVar(&f.url, "url", "", "navigate to this URL before the first step")
 	fs.IntVar(&f.opts.MaxSteps, "max-steps", f.opts.MaxSteps, "stop after this many actions")

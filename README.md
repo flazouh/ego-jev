@@ -66,8 +66,8 @@ ego-jev run [flags] "goal"
 
 | Flag | Default | Meaning |
 |---|---|---|
-| `--space ID` | new space | Resume an existing ego task space. |
-| `--name NAME` | `ego-jev` | Name of a new task space. |
+| `--space ID` | | Resume the ego task space with this id. |
+| `--name NAME` | `ego-jev` | Without `--space`, resume the task space with this name, or create it. |
 | `--page LABEL` | `p1` | Page label inside the task space. |
 | `--url URL` | | Navigate before the first step. |
 | `--value "label=text"` | | Text for a field whose label contains `label`. Repeatable. |
@@ -92,17 +92,17 @@ On a hand-back, the task space stays open at that page. `--json` includes `space
 
 ## Measurements
 
-Measured on one Mac in Europe against `jev-1.13.0`, September 2026. Small samples; treat them as a first check, not a
-benchmark.
+Measured on one Mac in Europe against `jev-1.13.0`, September 2026, at commit `052081b`. Small samples; treat them as a
+first check, not a benchmark.
 
-- One Jev decision: about 230 to 870 ms. Observing the local fixture page: 1 to 2 ms.
+- Three consecutive `make e2e-live` runs: the 6-case local fixture app passed 6 of 6 and the 4 read-only real-site goals
+  (Wikipedia search, a GitHub tab, a Hacker News link, both Google Flights city fields) passed 4 of 4, each run. Every
+  `done` passed an independent page check, and the delete case stopped as `review` without pressing the button.
+- Jev decision time across those runs: 90 calls, 236 to 567 ms, median 310 ms.
+- The two CLI demos, run twice each and checked on the page afterwards: the Wikipedia search ended `done` in 2 steps
+  (4.9 s and 7.7 s); the Google Flights Zurich-to-London fields ended `done` in 6 steps (7.1 s and 9.4 s).
 - A raw CDP click: 4 to 13 ms. ego's `page.click` in the same session: about 70 ms for the first three, then 800 to
-  1,100 ms each.
-- The e2e suite (`make e2e-live`), four runs: the 6-case local fixture app passed 5, 5, 4, and 5 of 6. The "scroll to a
-  link" case reaches the right page every time but stops as `unsure` because the goal-met check says no. The dropdown
-  case failed once; its SELECT vote sits near the gate at p=0.58 to 0.65. The 4 read-only real-site goals (Wikipedia
-  search, a GitHub tab, a Hacker News link, both Google Flights city fields) passed 3, 4, 4, and 4 of 4; Google Flights
-  failed once.
+  1,100 ms each. Observing the local fixture page: 1 to 2 ms.
 
 ## Limits
 

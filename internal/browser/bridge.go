@@ -31,7 +31,7 @@ const ConfigMarker = "__EGO_JEV_CONFIG__"
 
 // Options says which ego task space and Page to drive.
 type Options struct {
-	// Space resumes an existing task space by id. When zero, a new space named Name is created.
+	// Space resumes a task space by id. When zero, ego resumes the space named Name, or creates it.
 	Space int
 	Name  string
 	Page  string
