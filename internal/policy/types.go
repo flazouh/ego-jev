@@ -6,6 +6,7 @@ package policy
 type Observation struct {
 	URL      string    `json:"url"`
 	Title    string    `json:"title"`
+	Heading  string    `json:"heading,omitempty"`
 	Text     string    `json:"text"`
 	Elements []Element `json:"elements"`
 	Viewport Viewport  `json:"viewport"`

@@ -111,10 +111,13 @@ function observeInPage({ maxElements, maxText }) {
       length += value.length + 1;
     }
   }
+  const headingEl = [...document.querySelectorAll("h1"), ...document.querySelectorAll("h2")].find(visible);
+  const heading = headingEl ? text(headingEl.innerText, 120) : "";
   const scroller = document.scrollingElement || document.documentElement;
   return {
     url: location.href,
     title: document.title,
+    ...(heading ? { heading } : {}),
     text: words.join("\n").slice(0, maxText),
     elements,
     viewport: { width: innerWidth, height: innerHeight },

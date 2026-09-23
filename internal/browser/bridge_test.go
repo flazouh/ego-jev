@@ -60,7 +60,7 @@ func fakeEgo(mode string, args []string) int {
 		case mode == "extra-field" && req.Method == "observe":
 			reply.Result = json.RawMessage(`{"url":"u","title":"t","text":"","elements":[],"viewport":{"width":1,"height":1},"scroll":{"up":false,"down":false},"surprise":1}`)
 		case req.Method == "observe":
-			reply.Result = json.RawMessage(`{"url":"https://x.test/","title":"X","text":"hi","elements":[{"id":"e1","role":"button","label":"Go","context":"Dialog"}],"viewport":{"width":800,"height":600},"scroll":{"up":false,"down":true}}`)
+			reply.Result = json.RawMessage(`{"url":"https://x.test/","title":"X","heading":"Welcome","text":"hi","elements":[{"id":"e1","role":"button","label":"Go","context":"Dialog"}],"viewport":{"width":800,"height":600},"scroll":{"up":false,"down":true}}`)
 		case req.Method == "finish":
 			reply.Result = json.RawMessage(`{}`)
 		default:
@@ -94,7 +94,7 @@ func TestStartResumesASpaceAndObserves(t *testing.T) {
 		t.Fatalf("info = %+v", b.Info)
 	}
 	o, err := b.Observe(200, 3000)
-	if err != nil || o.Title != "X" || len(o.Elements) != 1 || o.Elements[0].Context != "Dialog" || !o.Scroll.Down {
+	if err != nil || o.Title != "X" || o.Heading != "Welcome" || len(o.Elements) != 1 || o.Elements[0].Context != "Dialog" || !o.Scroll.Down {
 		t.Fatalf("observe = %+v, %v", o, err)
 	}
 	if err := b.Close(true); err != nil {

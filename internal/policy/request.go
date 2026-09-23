@@ -69,9 +69,10 @@ type State struct {
 }
 
 type PageState struct {
-	URL   string `json:"url"`
-	Title string `json:"title"`
-	Text  string `json:"text"`
+	URL     string `json:"url"`
+	Title   string `json:"title"`
+	Heading string `json:"heading,omitempty"`
+	Text    string `json:"text"`
 }
 
 type RecentState struct {
@@ -170,7 +171,7 @@ func BuildPrompt(o Observation, c Candidates, goal string, history []Action, mod
 		Model: model,
 		State: State{
 			Goal:          goal,
-			Page:          PageState{URL: o.URL, Title: o.Title, Text: o.Text},
+			Page:          PageState{URL: o.URL, Title: o.Title, Heading: o.Heading, Text: o.Text},
 			Elements:      elements,
 			HeldForUser:   held,
 			RecentActions: recent,
