@@ -7,8 +7,10 @@ import (
 )
 
 const (
+	// DONE is accepted with a strong DONE vote and a leaning-yes goal_met, or with a very sure goal_met alone.
 	doneMinProbability = 0.8
 	goalMetMin         = 0.5
+	goalMetSure        = 0.9
 	// A yes on needs_held alone stops the run for review, whatever the operation vote says.
 	needsHeldMin = 0.5
 	// Risky controls never reach a click or select head, so a split vote between two remaining targets is two safe moves.
@@ -130,11 +132,13 @@ func (p Prompt) Read(resp Response, g Gates) (Decision, error) {
 			d.Why = fmt.Sprintf("target %s at %s", target.Label, tr)
 		}
 	}
-	met := noul(resp, "goal_met")
-	switch {
-	case d.Op == Done && !(operation.Probability >= doneMinProbability && met >= goalMetMin):
-		d.Why = fmt.Sprintf("DONE not confirmed: p=%.2f, goal_met=%.2f", operation.Probability, met)
-	case !g.clear(operation):
+	if d.Op == Done {
+		// DONE takes no action, so its own two checks replace the operation gate.
+		met := noul(resp, "goal_met")
+		if !(operation.Probability >= doneMinProbability && met >= goalMetMin) && !(met >= goalMetSure) {
+			d.Why = fmt.Sprintf("DONE not confirmed: p=%.2f, goal_met=%.2f", operation.Probability, met)
+		}
+	} else if !g.clear(operation) {
 		d.Why = fmt.Sprintf("operation %s at %s", d.Op, operation)
 	}
 	d.Sure = d.Why == ""

@@ -196,7 +196,7 @@ func TestDoneNeedsAStrongVoteAndGoalMet(t *testing.T) {
 	for _, tc := range []struct {
 		p, met float64
 		sure   bool
-	}{{0.67, 0.9, false}, {0.95, 0.3, false}, {0.95, 0.9, true}} {
+	}{{0.67, 0.85, false}, {0.95, 0.3, false}, {0.95, 0.9, true}} {
 		if d, _ := req.Read(done(tc.p, tc.met), gates); d.Sure != tc.sure {
 			t.Errorf("p=%v met=%v sure=%v, want %v (%s)", tc.p, tc.met, d.Sure, tc.sure, d.Why)
 		}
